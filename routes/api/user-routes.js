@@ -3,7 +3,9 @@ const { User } = require('../../models');
 
 // GET all users
 router.get('/', (req, res) => {
-    User.findAll() //(equivalent to) SELECT * FROM users; 
+    User.findAll({ //(equivalent to) SELECT * FROM users; 
+        attributes: { exclude: ['password'] }
+    }) 
         .then(dbUserData => res.json(dbUserData))
         .catch(err => {
             console.log(err);
@@ -14,6 +16,7 @@ router.get('/', (req, res) => {
 // GET 1 user based on parameters
 router.get('/:id', (req, res) => {
     User.fineOne({
+        attributes: { exclude: ['password'] },
         where: {
             id: req.params.id
         }
