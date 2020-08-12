@@ -55,6 +55,7 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
     // combines create and look up data
     User.update(req.body, {
+        individualHooks: true, 
         where: {
             id: req.params.id
         }
