@@ -5,7 +5,7 @@ const { User } = require('../../models');
 router.get('/', (req, res) => {
     User.findAll({ //(equivalent to) SELECT * FROM users; 
         attributes: { exclude: ['password'] }
-    }) 
+    })
         .then(dbUserData => res.json(dbUserData))
         .catch(err => {
             console.log(err);
@@ -40,7 +40,7 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     // pass in key/value pairs; keys user model, values from req.body
     User.create({
-        username: req.body.username, 
+        username: req.body.username,
         email: req.body.email,
         password: req.body.password
     })
@@ -51,11 +51,32 @@ router.post('/', (req, res) => {
         });
 });
 
+router.post('/login', (req, res) => {
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    })
+        .then(dbUserData => {
+            if (!dbUserData) {
+                res.status(400).json({ message: 'No user with that email addres! ' });
+                return;
+            }
+            const validPassword = dbUserData.checkPassword(req.body.password);
+            if (!validPassword) {
+                res.status(400).json({ message: 'Incorrect password! '});
+                return;
+            }
+
+            res.json({ user: dbUserData, message: 'You are now loggin in! ' });
+        });
+});
+
 // PUT to update existing data
 router.put('/:id', (req, res) => {
     // combines create and look up data
     User.update(req.body, {
-        individualHooks: true, 
+        individualHooks: true,
         where: {
             id: req.params.id
         }
