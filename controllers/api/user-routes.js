@@ -110,6 +110,17 @@ router.post('/login', (req, res) => {
     });
 });
 
+//logout-destory session
+router.post('/logout', (req, res) => {
+    if (req.session.loggedIn) {
+        req.session.destroy(() => {
+            res.status(204).end();
+        });
+    } else {
+        res.status(404).end();
+    }
+});
+
 // PUT to update existing data
 router.put('/:id', (req, res) => {
     // combines create and look up data
