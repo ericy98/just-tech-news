@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { User, Post, Vote, Comment } = require('../../models');
+const withAuth = require('../utils/auth');
 
 // GET all users
 router.get('/', (req, res) => {
@@ -58,7 +59,7 @@ router.get('/:id', (req, res) => {
 });
 
 // POST to create a user
-router.post('/', (req, res) => {
+router.post('/', withAuth, (req, res) => {
     // pass in key/value pairs; keys user model, values from req.body
     User.create({
         username: req.body.username,
@@ -81,7 +82,7 @@ router.post('/', (req, res) => {
 
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', withAuth,  (req, res) => {
     User.findOne({
         where: {
             email: req.body.email
@@ -111,7 +112,7 @@ router.post('/login', (req, res) => {
 });
 
 //logout-destory session
-router.post('/logout', (req, res) => {
+router.post('/logout', withAuth, (req, res) => {
     if (req.session.loggedIn) {
         req.session.destroy(() => {
             res.status(204).end();
@@ -122,7 +123,7 @@ router.post('/logout', (req, res) => {
 });
 
 // PUT to update existing data
-router.put('/:id', (req, res) => {
+router.put('/:id', withAuth, (req, res) => {
     // combines create and look up data
     User.update(req.body, {
         individualHooks: true,
@@ -144,7 +145,7 @@ router.put('/:id', (req, res) => {
 });
 
 // DELETE user from data
-router.delete('/:id', (req, res) => {
+router.delete('/:id', withAuth, (req, res) => {
     User.destroy({
         where: {
             id: req.params.id
